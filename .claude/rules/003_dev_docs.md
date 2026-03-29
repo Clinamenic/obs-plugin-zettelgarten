@@ -1,0 +1,25 @@
+---
+paths:
+  - ".workspace/docs/**/*"
+---
+
+## Documentation Framework
+
+1. Purpose
+
+   - Support development process
+   - Document patterns and decisions
+   - Guide without constraining
+   - Enable knowledge sharing
+
+2. Organization
+
+   - .workspace/docs/ref/: External references and standards (e.g., Obsidian plugin guidelines)
+   - .workspace/docs/temp/: Work in progress documentation and planning
+   - .workspace/docs/arch/: Architecture and design docs; updated each release
+
+3. Best Practices
+   - Centralize shared project docs in `.workspace/docs/`
+   - Keep assistant-specific guidance in their respective directories (`.cursor/`, `.claude/`)
+   - Maintain docs assistant-agnostic by default
+   - Cross-reference from assistant-specific rules to `.workspace/docs/`

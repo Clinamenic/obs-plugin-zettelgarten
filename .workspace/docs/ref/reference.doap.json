@@ -1,0 +1,96 @@
+{
+    "@context": [
+        "https://schema.org/",
+        "http://usefulinc.com/ns/doap#"
+    ],
+    "@type": "SoftwareApplication",
+    "name": "My Plugin",
+    "description": "Manages and links related notes across your vault using a configurable tagging system.",
+    "url": "https://github.com/example/my-plugin",
+    "version": "1.2.0",
+    "dateCreated": "2025-01-15",
+    "dateModified": "2026-03-01",
+    "license": "https://opensource.org/licenses/MIT",
+    "programmingLanguage": [
+        "TypeScript"
+    ],
+    "runtimePlatform": "Obsidian",
+    "applicationCategory": "DesktopApplication",
+    "operatingSystem": "macOS, Windows, Linux",
+    "author": {
+        "@type": "Person",
+        "name": "Example Author",
+        "url": "https://github.com/example"
+    },
+    "repository": {
+        "@type": "SoftwareSourceCode",
+        "url": "https://github.com/example/my-plugin",
+        "programmingLanguage": "TypeScript",
+        "license": "https://opensource.org/licenses/MIT",
+        "codeRepository": "https://github.com/example/my-plugin"
+    },
+    "issueTracker": "https://github.com/example/my-plugin/issues",
+    "releaseNotes": "https://github.com/example/my-plugin/releases",
+    "changelog": {
+        "@type": "WebPage",
+        "url": "https://github.com/example/my-plugin/blob/main/CHANGELOG.md",
+        "description": "Plugin changelog with version history"
+    },
+    "keywords": [
+        "obsidian",
+        "obsidian-plugin",
+        "notes",
+        "tags",
+        "linking"
+    ],
+    "featureList": [
+        "Automatically links related notes based on shared tags",
+        "Configurable tag prefixes and match thresholds",
+        "Sidebar panel showing linked notes for the active file"
+    ],
+    "softwareRequirements": [
+        {
+            "@type": "SoftwareApplication",
+            "name": "Obsidian",
+            "version": "1.0.0"
+        }
+    ],
+    "buildSystem": {
+        "@type": "SoftwareApplication",
+        "name": "esbuild",
+        "version": "0.25+"
+    },
+    "dependencies": [
+        {
+            "@type": "SoftwareApplication",
+            "name": "TypeScript",
+            "version": "5.0+"
+        }
+    ],
+    "obsidianPluginId": "my-plugin",
+    "obsidianMinVersion": "1.0.0",
+    "releases": [
+        {
+            "@type": "SoftwareRelease",
+            "version": "1.2.0",
+            "url": "https://github.com/example/my-plugin/releases/tag/v1.2.0",
+            "releaseDate": "2026-03-01",
+            "description": "Added sidebar panel; improved tag-matching performance"
+        },
+        {
+            "@type": "SoftwareRelease",
+            "version": "1.1.0",
+            "url": "https://github.com/example/my-plugin/releases/tag/v1.1.0",
+            "releaseDate": "2025-09-10",
+            "description": "Added configurable match threshold setting"
+        },
+        {
+            "@type": "SoftwareRelease",
+            "version": "1.0.0",
+            "url": "https://github.com/example/my-plugin/releases/tag/v1.0.0",
+            "releaseDate": "2025-01-15",
+            "description": "Initial release"
+        }
+    ],
+    "relatedProjects": []
+}

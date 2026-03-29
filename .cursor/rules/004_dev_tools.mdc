@@ -1,0 +1,25 @@
+---
+description: Development tool management and configuration as part of workspace scaffolding.
+globs: .workspace/scripts/**/*,.workspace/config/**/*
+---
+
+## Tool Framework
+
+1. Purpose
+
+   - Support development workflow
+   - Provide utility scripts
+   - Configure development tools
+
+2. Organization
+
+   - .workspace/scripts/: Shared automation (assistant-agnostic)
+     - version-bump.sh — SemVer bump (manifest-first)
+     - doap-sync.sh — sync doap.json metadata to package.json
+   - .workspace/config/: Shared configuration overrides
+     - version-bump.conf — optional overrides for version-bump.sh
+
+3. Best Practices
+   - Put shared scripts in `.workspace/scripts/`, configs in `.workspace/config/`
+   - Keep assistant-specific rules in their respective directories
+   - Document tool usage in `.workspace/docs/` and cross-reference from rules

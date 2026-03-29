@@ -1,0 +1,14 @@
+/*
+ * Plugin styles.
+ *
+ * Use Obsidian CSS variables for all colours and spacing so the plugin
+ * respects the user's chosen theme. Examples:
+ *
+ *   color: var(--text-normal);
+ *   background: var(--background-primary);
+ *   border: 1px solid var(--background-modifier-border);
+ *   padding: var(--size-4-2);
+ *
+ * Prefix every class with your plugin id to avoid collisions:
+ *   .my-plugin-modal { ... }
+ */
