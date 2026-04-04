@@ -1,14 +1,53 @@
-/*
- * Plugin styles.
- *
- * Use Obsidian CSS variables for all colours and spacing so the plugin
- * respects the user's chosen theme. Examples:
- *
- *   color: var(--text-normal);
- *   background: var(--background-primary);
- *   border: 1px solid var(--background-modifier-border);
- *   padding: var(--size-4-2);
- *
- * Prefix every class with your plugin id to avoid collisions:
- *   .my-plugin-modal { ... }
- */
+/* -------------------------------------------------------------------------
+   Zettelgarten — plugin styles
+   All classes are prefixed with zettelgarten- to avoid conflicts.
+   All colours and spacing use Obsidian CSS variables.
+   ------------------------------------------------------------------------- */
+
+/* Modal titles */
+.zettelgarten-modal-title {
+    margin-top: 0;
+    margin-bottom: var(--size-4-3);
+    font-size: var(--font-text-size);
+    font-weight: var(--font-semibold);
+    color: var(--text-normal);
+}
+
+/* Migration preview modal */
+.zettelgarten-migration-desc {
+    color: var(--text-muted);
+    font-size: var(--font-ui-small);
+    margin-bottom: var(--size-4-3);
+}
+
+.zettelgarten-migration-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--font-ui-small);
+    margin-bottom: var(--size-4-4);
+}
+
+.zettelgarten-migration-table th,
+.zettelgarten-migration-table td {
+    text-align: left;
+    padding: var(--size-4-1) var(--size-4-2);
+    border-bottom: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+}
+
+.zettelgarten-migration-table th {
+    color: var(--text-muted);
+    font-weight: var(--font-semibold);
+}
+
+.zettelgarten-migration-table tbody tr:hover td {
+    background-color: var(--background-secondary);
+}
+
+/* Settings hint text */
+.zettelgarten-setting-hint {
+    font-size: var(--font-ui-small);
+    color: var(--text-muted);
+    margin-top: var(--size-4-2);
+    line-height: 1.5;
+}

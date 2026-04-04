@@ -1,23 +1,31 @@
-import { Plugin } from "obsidian";
-import { DEFAULT_SETTINGS, MyPluginSettingTab } from "./settings";
-import type { PluginSettings } from "./types";
+import { Plugin } from 'obsidian';
+import { DEFAULT_SETTINGS, ZettelgartenSettingTab } from './settings';
+import { registerContextMenus } from './context-menu';
+import { ensureDefaultTemplate } from './template-processor';
+import type { PluginSettings } from './types';
 
-export default class MyPlugin extends Plugin {
-  settings: PluginSettings = DEFAULT_SETTINGS;
+export default class ZettelgartenPlugin extends Plugin {
+    settings: PluginSettings = { ...DEFAULT_SETTINGS };
 
-  async onload(): Promise<void> {
-    await this.loadSettings();
+    async onload(): Promise<void> {
+        await this.loadSettings();
 
-    this.addSettingTab(new MyPluginSettingTab(this.app, this));
-  }
+        const pluginDir = this.manifest.dir ?? `.obsidian/plugins/${this.manifest.id}`;
 
-  onunload(): void {}
+        await ensureDefaultTemplate(this.app, pluginDir);
 
-  async loadSettings(): Promise<void> {
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-  }
+        this.addSettingTab(new ZettelgartenSettingTab(this.app, this));
 
-  async saveSettings(): Promise<void> {
-    await this.saveData(this.settings);
-  }
+        registerContextMenus(this, pluginDir);
+    }
+
+    onunload(): void {}
+
+    async loadSettings(): Promise<void> {
+        this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    }
+
+    async saveSettings(): Promise<void> {
+        await this.saveData(this.settings);
+    }
 }

@@ -1,14 +1,14 @@
 {
-  "name": "{{PLUGIN_ID}}",
+  "name": "zettelgarten",
   "version": "0.1.0",
-  "description": "{{PLUGIN_DESCRIPTION}}",
+  "description": "Zettelkasten note management with configurable ID schemes, derivative note creation, and automatic frontmatter generation.",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",
     "build": "tsc --noEmit --skipLibCheck && node esbuild.config.mjs production"
   },
-  "keywords": ["obsidian", "obsidian-plugin"],
-  "author": "{{AUTHOR_NAME}}",
+  "keywords": ["obsidian", "obsidian-plugin", "zettelkasten", "note-taking"],
+  "author": "Clinamenic",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
