@@ -1,88 +1,7 @@
-import { App, Modal, Notice, Setting, TFile } from 'obsidian';
+import { App, Notice, TFile } from 'obsidian';
 import type { PluginSettings, TemplateContext } from './types';
 import { createScheme } from './id-scheme';
-import { processTemplate, injectTitle } from './template-processor';
-
-// ---------------------------------------------------------------------------
-// Title prompt modal
-// ---------------------------------------------------------------------------
-
-class TitlePromptModal extends Modal {
-    private inputEl!: HTMLInputElement;
-    private confirmed = false;
-
-    constructor(
-        app: App,
-        private readonly onConfirm: (title: string) => void,
-        private readonly onCancel: () => void,
-    ) {
-        super(app);
-    }
-
-    onOpen(): void {
-        const { contentEl } = this;
-        contentEl.createEl('h3', { text: 'New Zettel Note', cls: 'zettelgarten-modal-title' });
-
-        new Setting(contentEl)
-            .setName('Title')
-            .setDesc('Optional semantic title — leave blank to use the ID as the filename')
-            .addText(text => {
-                this.inputEl = text.inputEl;
-                text.setPlaceholder('e.g. Elephant Lifespan');
-                text.inputEl.addEventListener('keydown', (e: KeyboardEvent) => {
-                    if (e.key === 'Enter') this.confirm();
-                    if (e.key === 'Escape') { e.preventDefault(); this.cancel(); }
-                });
-            });
-
-        const btnSetting = new Setting(contentEl);
-        btnSetting.addButton(btn =>
-            btn.setButtonText('Create').setCta().onClick(() => this.confirm()),
-        );
-        btnSetting.addButton(btn =>
-            btn.setButtonText('Cancel').onClick(() => this.cancel()),
-        );
-
-        setTimeout(() => this.inputEl?.focus(), 50);
-    }
-
-    onClose(): void {
-        if (!this.confirmed) this.onCancel();
-        this.contentEl.empty();
-    }
-
-    private confirm(): void {
-        this.confirmed = true;
-        const title = this.inputEl?.value.trim() ?? '';
-        this.close();
-        this.onConfirm(title);
-    }
-
-    private cancel(): void {
-        this.confirmed = true;
-        this.close();
-        this.onCancel();
-    }
-}
-
-function promptForTitle(app: App): Promise<string | null> {
-    return new Promise(resolve => {
-        const modal = new TitlePromptModal(
-            app,
-            title => resolve(title),
-            () => resolve(null),
-        );
-        modal.open();
-    });
-}
-
-// ---------------------------------------------------------------------------
-// Sanitise a string for use in a filename
-// ---------------------------------------------------------------------------
-
-function sanitiseFilename(str: string): string {
-    return str.replace(/[\\/:*?"<>|#^[\]]/g, '').trim();
-}
+import { processTemplate } from './template-processor';
 
 // ---------------------------------------------------------------------------
 // Core note creation
@@ -103,7 +22,7 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
 
     const scheme = createScheme(app, settings);
 
-    // Resolve zettel-id
+    // Resolve zettel-id and parent metadata
     let zettelId: string;
     let parentZettelId = '';
     let parentUuid = '';
@@ -131,27 +50,18 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
         }
     }
 
-    // Prompt for title (null = user cancelled)
-    const title = await promptForTitle(app);
-    if (title === null) return;
-
-    // Build TemplateContext
+    // Build TemplateContext (title is blank — user fills it in after creation)
     const ctx: TemplateContext = {
         uuid: crypto.randomUUID(),
         zettelId,
         parentUuid,
         parentId: parentZettelId,
         references,
-        title,
+        title: '',
     };
 
     // Process template
-    let frontmatter = await processTemplate(app, settings.templatePath, pluginDir, ctx);
-
-    // Inject title if template did not include {{title}}
-    if (title) {
-        frontmatter = injectTitle(frontmatter, title);
-    }
+    const frontmatter = await processTemplate(app, settings.templatePath, pluginDir, ctx);
 
     // Build body
     let body = '';
@@ -162,23 +72,25 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
 
     const content = frontmatter + body;
 
-    // Build filename and path
-    const safeTitle = sanitiseFilename(title);
-    const filename = safeTitle
-        ? `${zettelId} - ${safeTitle}.md`
-        : `${zettelId}.md`;
-
+    // Filename is always just the zettel-id (title is filled in by the user)
     const targetFolder = context === 'excerpt'
         ? (settings.defaultFolder || '')
         : folderPath;
     const filePath = targetFolder
-        ? `${targetFolder}/${filename}`
-        : filename;
+        ? `${targetFolder}/${zettelId}.md`
+        : `${zettelId}.md`;
 
-    // Create the file
+    // Create the file and open it with cursor in the content area
     try {
         const file = await app.vault.create(filePath, content);
-        await app.workspace.getLeaf(false).openFile(file);
+        const leaf = app.workspace.getLeaf(false);
+        await leaf.openFile(file);
+        // Move cursor past the frontmatter into the content area
+        const view = leaf.view as { editor?: { setCursor: (pos: { line: number; ch: number }) => void; lineCount: () => number } };
+        if (view.editor) {
+            const lastLine = view.editor.lineCount() - 1;
+            view.editor.setCursor({ line: lastLine, ch: 0 });
+        }
     } catch (err) {
         new Notice(`Zettelgarten: could not create note — ${String(err)}`);
     }

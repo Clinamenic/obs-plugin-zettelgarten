@@ -107,25 +107,6 @@ function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown> {
     };
 }
 
-export function injectTitle(frontmatter: string, title: string): string {
-    if (!title) return frontmatter;
-    const extracted = extractFrontmatter(frontmatter + '\n');
-    if (!extracted) return frontmatter;
-
-    let parsed: Record<string, unknown>;
-    try {
-        parsed = (parseYaml(extracted.yaml) as Record<string, unknown>) ?? {};
-    } catch {
-        return frontmatter;
-    }
-
-    if (parsed['title'] === null || parsed['title'] === undefined || parsed['title'] === '') {
-        parsed['title'] = title;
-        return buildFrontmatter(parsed);
-    }
-    return frontmatter;
-}
-
 export async function ensureDefaultTemplate(app: App, pluginDir: string): Promise<void> {
     const path = `${pluginDir}/default-template.md`;
     const exists = await app.vault.adapter.exists(path);
