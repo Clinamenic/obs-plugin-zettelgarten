@@ -9,7 +9,7 @@ parent-uuid: "{{parent-uuid}}"
 title:
 type: zettel
 date: "{{date}}"
-created: "{{datetime}}"
+timestamp-iso: "{{datetime}}"
 tags: []
 references: "{{references}}"
 ---
@@ -90,7 +90,6 @@ function buildFrontmatter(record: Record<string, unknown>): string {
 function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown> {
     const now = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');
-    const dateShort = `${pad(now.getMonth() + 1)}/${pad(now.getDate())}/${now.getFullYear()}`;
     const dateIso = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
     const datetime = `${dateIso}T${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
 
@@ -100,8 +99,8 @@ function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown> {
         'parent-uuid': ctx.parentUuid,
         title: ctx.title || null,
         type: 'zettel',
-        date: dateShort,
-        created: datetime,
+        date: dateIso,
+        'timestamp-iso': datetime,
         tags: [],
         references: ctx.references,
     };

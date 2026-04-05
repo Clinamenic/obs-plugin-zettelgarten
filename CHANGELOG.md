@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.3 - 2026-04-05
+
+### Changed
+
+- Renamed `created` frontmatter field to `timestamp-iso` to reflect the ISO 8601 format explicitly
+
+### Fixed
+
+- `parent-uuid` now populates correctly on excerpt/highlight notes (previously only derivative notes set this field)
+
 ## 0.1.2 - 2026-04-04
 
 ### Fixed

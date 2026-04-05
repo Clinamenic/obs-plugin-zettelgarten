@@ -46,6 +46,8 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
             : folderPath;
         zettelId = await scheme.nextRootId(targetFolder);
         if (context === 'excerpt' && parentFile) {
+            const cache = app.metadataCache.getFileCache(parentFile);
+            parentUuid = cache?.frontmatter?.['uuid'] ?? '';
             references = [`[[${parentFile.basename}]]`];
         }
     }
