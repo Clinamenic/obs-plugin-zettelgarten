@@ -7,7 +7,7 @@
     "name": "Zettelgarten",
     "description": "Luhmann folgezettel note IDs, derivative and excerpt note creation, configurable frontmatter templates, and bulk frontmatter updates for existing notes.",
     "url": "https://github.com/Clinamenic/obs-plugin-zettelgarten",
-    "version": "0.4.0",
+    "version": "0.4.1",
     "dateCreated": "2026-04-04",
     "dateModified": "2026-04-05",
     "license": "https://opensource.org/licenses/MIT",

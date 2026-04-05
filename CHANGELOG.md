@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.1 - 2026-04-05
+
+### Changed
+
+- **Luhmann IDs:** Sibling letters under a numeric parent now continue past `z` with multi-letter sequences (`1aa`, `1ab`, …, spreadsheet-style). Sibling numbers under a letter parent already supported arbitrary length (`1a10`, `1a11`, …). Segment parsing uses full runs of letters or digits so IDs stay unambiguous.
+
 ## 0.4.0 - 2026-04-05
 
 ### Breaking
