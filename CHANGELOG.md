@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.4 - 2026-04-05
+
+### Added
+
+- Ribbon icon (lowercase zeta ζ) in the left sidebar that opens the Zettelgarten settings tab directly
+
 ## 0.1.3 - 2026-04-05
 
 ### Changed
