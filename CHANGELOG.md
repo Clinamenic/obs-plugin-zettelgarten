@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0 - 2026-04-05
+
+### Added
+
+- **Apply current settings to existing notes** (Settings, bottom): unified vault sync in two steps: (1) hierarchical naming-scheme migration (rename files and update `zettel-id`) when applicable, same logic as folder migration but vault-wide; (2) rebuild frontmatter for notes with a `zettel-id` and a `type` matching the note template, preserving existing field values where keys remain enabled and removing keys for disabled optional fields.
+- [`computeMigrationEntries`](src/migration.ts), [`collectZettelNotesVaultWide`](src/migration.ts), and exported [`executeMigration`](src/migration.ts) for reuse.
+
 ## 0.2.0 - 2026-04-05
 
 ### Added

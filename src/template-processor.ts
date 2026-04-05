@@ -114,6 +114,110 @@ export function buildFrontmatter(record: Record<string, unknown>): string {
     return `---\n${stringifyYaml(record)}---\n`;
 }
 
+function coerceString(v: unknown): string {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'string') return v;
+    if (typeof v === 'number' || typeof v === 'boolean') return String(v);
+    return '';
+}
+
+function coerceStringArray(v: unknown): string[] {
+    if (!Array.isArray(v)) return [];
+    return v.map(x => String(x));
+}
+
+/**
+ * Rebuild frontmatter record from existing parsed YAML + current schema.
+ * Preserves values for enabled keys when present; fills missing keys via template resolution; omits disabled keys.
+ */
+export function buildRecordForExistingNote(
+    existing: Record<string, unknown>,
+    schema: NoteTemplateSchema,
+): Record<string, unknown> {
+    const typeLit = schema.typeLiteral.trim() || 'zettel';
+    const uuid =
+        typeof existing.uuid === 'string' && existing.uuid.trim() ? existing.uuid : crypto.randomUUID();
+    const zettelId = coerceString(existing['zettel-id']);
+    const parentUuid = coerceString(existing['parent-uuid']);
+    const parentId = coerceString(existing['parent-id']);
+    const title = coerceString(existing.title);
+    const references = coerceStringArray(existing.references);
+    const tags = coerceStringArray(existing.tags);
+
+    const ctx: TemplateContext = { uuid, zettelId, parentUuid, parentId, references, title, tags };
+
+    const record: Record<string, unknown> = {};
+    record.uuid = uuid;
+    record['zettel-id'] = zettelId;
+    record['parent-uuid'] = parentUuid;
+
+    const opt = schema.optionalFields;
+
+    if (opt.title.enabled) {
+        if (Object.prototype.hasOwnProperty.call(existing, 'title') && existing.title !== undefined) {
+            record.title = existing.title;
+        } else {
+            record.title = resolveOptionalFieldValue('title', opt.title.valueTemplate, ctx);
+        }
+    }
+
+    record.type = typeLit;
+
+    if (opt.date.enabled) {
+        if (Object.prototype.hasOwnProperty.call(existing, 'date') && existing.date !== undefined) {
+            record.date = existing.date;
+        } else {
+            record.date = resolveOptionalFieldValue('date', opt.date.valueTemplate, ctx);
+        }
+    }
+
+    if (opt.timestampIso.enabled) {
+        const k = 'timestamp-iso';
+        if (Object.prototype.hasOwnProperty.call(existing, k) && existing[k] !== undefined) {
+            record[k] = existing[k];
+        } else {
+            record[k] = resolveOptionalFieldValue('timestampIso', opt.timestampIso.valueTemplate, ctx);
+        }
+    }
+
+    if (opt.tags.enabled) {
+        if (Object.prototype.hasOwnProperty.call(existing, 'tags') && existing.tags !== undefined) {
+            record.tags = existing.tags;
+        } else {
+            record.tags = resolveOptionalFieldValue('tags', opt.tags.valueTemplate, ctx);
+        }
+    }
+
+    if (opt.references.enabled) {
+        if (Object.prototype.hasOwnProperty.call(existing, 'references') && existing.references !== undefined) {
+            record.references = existing.references;
+        } else {
+            record.references = resolveOptionalFieldValue('references', opt.references.valueTemplate, ctx);
+        }
+    }
+
+    if (opt.parentId.enabled) {
+        const k = 'parent-id';
+        if (Object.prototype.hasOwnProperty.call(existing, k) && existing[k] !== undefined) {
+            record[k] = existing[k];
+        } else {
+            record[k] = resolveOptionalFieldValue('parentId', opt.parentId.valueTemplate, ctx);
+        }
+    }
+
+    return record;
+}
+
+/** Replace first YAML frontmatter block with a new record, or prepend frontmatter if none. */
+export function replaceFrontmatterInContent(content: string, record: Record<string, unknown>): string {
+    const block = buildFrontmatter(record);
+    const re = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/;
+    if (re.test(content)) {
+        return content.replace(re, block);
+    }
+    return block + content;
+}
+
 export function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown> {
     const now = new Date();
     const pad = (n: number) => n.toString().padStart(2, '0');

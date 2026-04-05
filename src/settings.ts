@@ -4,6 +4,7 @@ import type { NoteTemplateSchema, OptionalTemplateFieldKey, PluginSettings, Sche
 import { DEFAULT_NOTE_TEMPLATE_SCHEMA } from './types';
 import { mergeNoteTemplateSchema, NOTE_TEMPLATE_OPTIONAL_KEYS } from './template-processor';
 import { previewNoteTemplateYaml, validateNoteTemplateSchema } from './template-validation';
+import { openUnifiedVaultSyncModal } from './vault-sync';
 
 export const DEFAULT_SETTINGS: PluginSettings = {
     scheme: 'luhmann',
@@ -219,6 +220,20 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
         });
 
         this.renderTemplateFeedback(containerEl);
+
+        containerEl.createEl('h3', { text: 'Existing notes' });
+        containerEl.createEl('p', {
+            text:
+                'Apply your current naming scheme and note template to notes that already exist. ' +
+                'Step 1 updates zettel-ids and filenames when using a hierarchical scheme. ' +
+                'Step 2 rebuilds frontmatter for notes whose `type` matches the template (existing values are kept where possible; disabled optional fields are removed).',
+            cls: 'zettelgarten-setting-hint',
+        });
+        new Setting(containerEl).addButton(btn =>
+            btn.setButtonText('Apply current settings to existing notes').setCta().onClick(() => {
+                openUnifiedVaultSyncModal(this.app, this.plugin.settings);
+            }),
+        );
     }
 
     private renderTemplateFeedback(containerEl: HTMLElement): void {

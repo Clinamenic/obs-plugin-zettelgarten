@@ -7,12 +7,20 @@ import type { PluginSettings } from './types';
 // Collect notes with zettel-id from a folder
 // ---------------------------------------------------------------------------
 
-function collectZettelNotes(app: App, folderPath: string): TFile[] {
+export function collectZettelNotesInFolder(app: App, folderPath: string): TFile[] {
     const normalized = folderPath === '/' ? '' : folderPath;
     return app.vault.getMarkdownFiles().filter(f => {
         const p = f.parent?.path ?? '';
         const norm = p === '/' ? '' : p;
         if (norm !== normalized) return false;
+        const cache = app.metadataCache.getFileCache(f);
+        return typeof cache?.frontmatter?.['zettel-id'] === 'string';
+    });
+}
+
+/** All markdown files in the vault that have a `zettel-id` in frontmatter. */
+export function collectZettelNotesVaultWide(app: App): TFile[] {
+    return app.vault.getMarkdownFiles().filter(f => {
         const cache = app.metadataCache.getFileCache(f);
         return typeof cache?.frontmatter?.['zettel-id'] === 'string';
     });
@@ -107,6 +115,20 @@ function buildMigrationEntries(app: App, notes: TreeNote[]): MigrationEntry[] {
         });
 }
 
+
+/**
+ * Compute which notes need renames/new IDs for the current hierarchical scheme.
+ * Returns empty array if scheme is not hierarchical or nothing changes.
+ */
+export function computeMigrationEntries(app: App, settings: PluginSettings, files: TFile[]): MigrationEntry[] {
+    const scheme = createScheme(app, settings);
+    if (!scheme.isHierarchical()) return [];
+    if (files.length === 0) return [];
+    const notes = buildTree(app, files, scheme);
+    assignIds(notes, scheme as LuhmannScheme | DecimalScheme, null);
+    return buildMigrationEntries(app, notes);
+}
+
 // ---------------------------------------------------------------------------
 // Preview modal
 // ---------------------------------------------------------------------------
@@ -191,7 +213,7 @@ function updateFrontmatterField(content: string, key: string, newValue: string):
 // Execute migration
 // ---------------------------------------------------------------------------
 
-async function executeMigration(app: App, entries: MigrationEntry[]): Promise<void> {
+export async function executeMigration(app: App, entries: MigrationEntry[]): Promise<void> {
     const tmpPrefix = '__ztg_tmp_';
 
     // Pass 1: rename to temp names
@@ -232,16 +254,13 @@ export async function migrateFolder(app: App, folderPath: string, settings: Plug
         return;
     }
 
-    const files = collectZettelNotes(app, folderPath);
+    const files = collectZettelNotesInFolder(app, folderPath);
     if (files.length === 0) {
         new Notice('Zettelgarten: no zettel notes found in this folder');
         return;
     }
 
-    const notes = buildTree(app, files, scheme);
-    assignIds(notes, scheme as LuhmannScheme | DecimalScheme, null);
-
-    const entries = buildMigrationEntries(app, notes);
+    const entries = computeMigrationEntries(app, settings, files);
     if (entries.length === 0) {
         new Notice('Zettelgarten: all notes already use the current scheme — nothing to migrate');
         return;

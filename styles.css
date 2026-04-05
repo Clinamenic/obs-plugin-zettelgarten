@@ -124,3 +124,12 @@
     margin: var(--size-4-1) 0 0;
     padding-left: var(--size-4-6);
 }
+
+/* Vault sync modal */
+.zettelgarten-vault-sync-h4 {
+    margin-top: var(--size-4-4);
+    margin-bottom: var(--size-4-2);
+    font-size: var(--font-ui-medium);
+    font-weight: var(--font-semibold);
+    color: var(--text-normal);
+}
