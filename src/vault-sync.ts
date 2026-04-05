@@ -145,9 +145,14 @@ export function openUnifiedVaultSyncModal(app: App, settings: PluginSettings): v
 
     new UnifiedVaultSyncModal(app, settings, idEntries, frontmatterCount, async () => {
         if (idEntries.length > 0) {
-            await executeMigration(app, idEntries);
+            await executeMigration(app, idEntries, { silent: true });
         }
         const n = await executeFrontmatterSync(app, settings);
-        new Notice(`Zettelgarten: frontmatter normalized for ${n} note(s).`);
+        const parts: string[] = [];
+        if (idEntries.length > 0) {
+            parts.push(`migrated ${idEntries.length} note(s)`);
+        }
+        parts.push(`frontmatter updated for ${n} note(s)`);
+        new Notice(`Zettelgarten: ${parts.join('; ')}.`);
     }).open();
 }

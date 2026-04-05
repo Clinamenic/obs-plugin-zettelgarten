@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.1 - 2026-04-05
+
+### Fixed
+
+- **Naming-scheme migration (bulk):** nested IDs now stage using each parent's **new** id in the target scheme (e.g. Luhmann `1a1` to decimal `1.1.1`), not the old parent string (which produced incorrect staging such as `1a.1`).
+
+### Changed
+
+- **Apply current settings to existing notes:** one summary notice after the run instead of separate migration and frontmatter notices.
+
 ## 0.3.0 - 2026-04-05
 
 ### Added

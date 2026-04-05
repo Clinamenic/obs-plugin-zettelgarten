@@ -102,10 +102,13 @@ export class LuhmannScheme extends IdScheme {
 
     isHierarchical(): boolean { return true; }
 
+    /**
+     * `nodes` is one sibling cohort only (migration walks the tree). `parentNewId` is that parent's
+     * id in the target scheme (null for roots). Do not filter by parentId; recursion is in migration.ts.
+     */
     assignMigrationIds(nodes: MigrationNode[], parentNewId: string | null): void {
-        const roots = nodes.filter(n => n.parentId === parentNewId);
-        roots.sort((a, b) => a.zettelId.localeCompare(b.zettelId));
-        roots.forEach((node, i) => {
+        const sorted = [...nodes].sort((a, b) => a.zettelId.localeCompare(b.zettelId));
+        sorted.forEach((node, i) => {
             if (parentNewId === null) {
                 node.newId = (i + 1).toString();
             } else {
@@ -116,7 +119,6 @@ export class LuhmannScheme extends IdScheme {
                     node.newId = parentNewId + String.fromCharCode('a'.charCodeAt(0) + i);
                 }
             }
-            this.assignMigrationIds(nodes, node.zettelId);
         });
     }
 }
@@ -156,14 +158,15 @@ export class DecimalScheme extends IdScheme {
 
     isHierarchical(): boolean { return true; }
 
+    /**
+     * `nodes` is one sibling cohort only. `parentNewId` is the parent's id in the target scheme.
+     */
     assignMigrationIds(nodes: MigrationNode[], parentNewId: string | null): void {
-        const roots = nodes.filter(n => n.parentId === parentNewId);
-        roots.sort((a, b) => a.zettelId.localeCompare(b.zettelId));
-        roots.forEach((node, i) => {
+        const sorted = [...nodes].sort((a, b) => a.zettelId.localeCompare(b.zettelId));
+        sorted.forEach((node, i) => {
             node.newId = parentNewId === null
                 ? (i + 1).toString()
                 : `${parentNewId}.${i + 1}`;
-            this.assignMigrationIds(nodes, node.zettelId);
         });
     }
 }

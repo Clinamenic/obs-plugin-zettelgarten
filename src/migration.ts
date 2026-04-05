@@ -73,23 +73,34 @@ function buildTree(app: App, files: TFile[], scheme: { parseId: (id: string) => 
 // Assign new IDs using target scheme
 // ---------------------------------------------------------------------------
 
-function assignIds(notes: TreeNote[], targetScheme: LuhmannScheme | DecimalScheme, parentId: string | null): void {
-    const children = notes.filter(n => n.treeParentId === parentId);
+/**
+ * @param parentOldId - treeParentId value for this cohort (old zettel-id of parent, or null for roots)
+ * @param parentNewId - parent's id already remapped to the target scheme (null for roots)
+ */
+function assignIds(
+    notes: TreeNote[],
+    targetScheme: LuhmannScheme | DecimalScheme,
+    parentOldId: string | null,
+    parentNewId: string | null,
+): void {
+    const children = notes.filter(n => n.treeParentId === parentOldId);
     children.sort((a, b) => a.zettelId.localeCompare(b.zettelId));
 
     const migNodes: MigrationNode[] = children.map(c => ({
         zettelId: c.zettelId,
-        parentId,
+        parentId: parentOldId,
         newId: '',
         children: [],
     }));
 
-    targetScheme.assignMigrationIds(migNodes, parentId);
+    targetScheme.assignMigrationIds(migNodes, parentNewId);
 
     children.forEach((child, i) => {
         child.newId = migNodes[i].newId;
-        assignIds(notes, targetScheme, child.zettelId);
     });
+    for (const child of children) {
+        assignIds(notes, targetScheme, child.zettelId, child.newId);
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -125,7 +136,7 @@ export function computeMigrationEntries(app: App, settings: PluginSettings, file
     if (!scheme.isHierarchical()) return [];
     if (files.length === 0) return [];
     const notes = buildTree(app, files, scheme);
-    assignIds(notes, scheme as LuhmannScheme | DecimalScheme, null);
+    assignIds(notes, scheme as LuhmannScheme | DecimalScheme, null, null);
     return buildMigrationEntries(app, notes);
 }
 
@@ -213,7 +224,11 @@ function updateFrontmatterField(content: string, key: string, newValue: string):
 // Execute migration
 // ---------------------------------------------------------------------------
 
-export async function executeMigration(app: App, entries: MigrationEntry[]): Promise<void> {
+export async function executeMigration(
+    app: App,
+    entries: MigrationEntry[],
+    options?: { silent?: boolean },
+): Promise<void> {
     const tmpPrefix = '__ztg_tmp_';
 
     // Pass 1: rename to temp names
@@ -239,7 +254,9 @@ export async function executeMigration(app: App, entries: MigrationEntry[]): Pro
         await app.fileManager.renameFile(tmpFile, entry.newPath);
     }
 
-    new Notice(`Zettelgarten: migrated ${entries.length} note(s)`);
+    if (!options?.silent) {
+        new Notice(`Zettelgarten: migrated ${entries.length} note(s)`);
+    }
 }
 
 // ---------------------------------------------------------------------------
