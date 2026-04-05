@@ -18,6 +18,7 @@ jobs:
         run: |
           npm install
           npm run build
+      # Published (not draft) so tools like BRAT and /releases/latest see the new version immediately.
       - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -25,5 +26,4 @@ jobs:
           tag="${GITHUB_REF#refs/tags/}"
           gh release create "$tag" \
             --title="$tag" \
-            --draft \
             main.js manifest.json styles.css
