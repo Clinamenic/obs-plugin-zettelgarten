@@ -8,7 +8,7 @@ zettel-id: "{{zettel-id}}"
 parent-uuid: "{{parent-uuid}}"
 title:
 type: zettel
-date: "{{date-short}}"
+date: "{{date}}"
 created: "{{datetime}}"
 tags: []
 references: "{{references}}"
@@ -109,8 +109,5 @@ function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown> {
 
 export async function ensureDefaultTemplate(app: App, pluginDir: string): Promise<void> {
     const path = `${pluginDir}/default-template.md`;
-    const exists = await app.vault.adapter.exists(path);
-    if (!exists) {
-        await app.vault.adapter.write(path, DEFAULT_TEMPLATE_CONTENT);
-    }
+    await app.vault.adapter.write(path, DEFAULT_TEMPLATE_CONTENT);
 }
