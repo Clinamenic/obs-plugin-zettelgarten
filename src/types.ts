@@ -8,6 +8,8 @@ export interface PluginSettings {
     customChildTemplate: string;
     defaultFolder: string;
     templatePath: string;
+    /** When true, rename notes to `{zettel-id}.md` or `{zettel-id} {title}.md` when title frontmatter changes. */
+    syncFilenameWithTitle: boolean;
 }
 
 export interface TemplateContext {

@@ -8,6 +8,7 @@ export const DEFAULT_SETTINGS: PluginSettings = {
     customChildTemplate: '{parent}{letter}',
     defaultFolder: '',
     templatePath: '',
+    syncFilenameWithTitle: true,
 };
 
 export class ZettelgartenSettingTab extends PluginSettingTab {
@@ -77,6 +78,20 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
 
         // --- Note Creation ---
         containerEl.createEl('h3', { text: 'Note Creation' });
+
+        new Setting(containerEl)
+            .setName('Sync filename with title')
+            .setDesc(
+                'When enabled, renaming the title property updates the file name to match: `{zettel-id}.md` with no title, ' +
+                    'or `{zettel-id} {title}.md` when a title is set. Applies to all ID schemes. ' +
+                    'Only affects notes whose file name already follows this pattern (or the legacy `{zettel-id} - {title}` form).',
+            )
+            .addToggle(toggle =>
+                toggle.setValue(this.plugin.settings.syncFilenameWithTitle).onChange(async val => {
+                    this.plugin.settings.syncFilenameWithTitle = val;
+                    await this.plugin.saveSettings();
+                }),
+            );
 
         new Setting(containerEl)
             .setName('Default folder')

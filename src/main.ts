@@ -1,6 +1,7 @@
 import { Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, ZettelgartenSettingTab } from './settings';
 import { registerContextMenus } from './context-menu';
+import { registerTitleFilenameSync } from './title-filename-sync';
 import { ensureDefaultTemplate } from './template-processor';
 import type { PluginSettings } from './types';
 
@@ -26,6 +27,8 @@ export default class ZettelgartenPlugin extends Plugin {
         // Replace the gear SVG with an italic serif zeta character
         ribbonEl.empty();
         ribbonEl.createEl('span', { text: 'ζ', cls: 'zettelgarten-ribbon-zeta' });
+
+        registerTitleFilenameSync(this);
 
         registerContextMenus(this, pluginDir);
     }

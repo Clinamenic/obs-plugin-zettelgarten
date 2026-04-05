@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6 - 2026-04-05
+
+### Added
+
+- Optional **Sync filename with title** (enabled by default in settings): when you edit the `title` property, the note renames to `{zettel-id}.md` or `{zettel-id} {title}.md` after a short delay. Applies to all ID schemes. Only affects notes whose basename already matches the plugin pattern (`{zettel-id}` only, `{zettel-id} …` with a space, or legacy `{zettel-id} - …`). Obsidian updates internal links on rename.
+
 ## 0.1.5 - 2026-04-05 (refs 5075d3b)
 
 ### Fixed
