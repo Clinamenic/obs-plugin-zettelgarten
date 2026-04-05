@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0 - 2026-04-05
+
+### Breaking
+
+- **ID schemes:** Only **Luhmann** alphanumeric folgezettel (`1`, `1a`, `1a1`, …) remains. Decimal, timestamp, sequential, and custom template schemes are removed.
+- **Settings:** `scheme`, `customRootTemplate`, and `customChildTemplate` are removed from saved settings (legacy keys are stripped on load).
+- **Migration / scheme conversion:** Folder command **Migrate notes to current scheme**, vault-wide ID rename migration, and all related APIs (`migration.ts`, `computeMigrationEntries`, `executeMigration`, etc.) are removed.
+
+### Changed
+
+- **Apply current settings to existing notes** now **only** rebuilds frontmatter from the note template for matching notes (zettel-id + type). No file renames or zettel-id remapping.
+
 ## 0.3.1 - 2026-04-05
 
 ### Fixed
@@ -14,8 +26,7 @@
 
 ### Added
 
-- **Apply current settings to existing notes** (Settings, bottom): unified vault sync in two steps: (1) hierarchical naming-scheme migration (rename files and update `zettel-id`) when applicable, same logic as folder migration but vault-wide; (2) rebuild frontmatter for notes with a `zettel-id` and a `type` matching the note template, preserving existing field values where keys remain enabled and removing keys for disabled optional fields.
-- [`computeMigrationEntries`](src/migration.ts), [`collectZettelNotesVaultWide`](src/migration.ts), and exported [`executeMigration`](src/migration.ts) for reuse.
+- **Apply current settings to existing notes** (Settings, bottom): unified vault sync in two steps: (1) hierarchical naming-scheme migration (rename files and update `zettel-id`) when applicable, same logic as folder migration but vault-wide; (2) rebuild frontmatter for notes with a `zettel-id` and a `type` matching the note template, preserving existing field values where keys remain enabled and removing keys for disabled optional fields. (Superseded in 0.4.0: frontmatter-only; see 0.4.0 breaking changes.)
 
 ## 0.2.0 - 2026-04-05
 

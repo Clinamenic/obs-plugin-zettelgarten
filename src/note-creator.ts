@@ -1,6 +1,6 @@
 import { App, Notice, TFile } from 'obsidian';
 import type { PluginSettings, TemplateContext } from './types';
-import { createScheme } from './id-scheme';
+import { LuhmannScheme } from './id-scheme';
 import { processTemplate } from './template-processor';
 
 // ---------------------------------------------------------------------------
@@ -19,7 +19,7 @@ export interface CreateNoteOpts {
 export async function createNote(opts: CreateNoteOpts): Promise<void> {
     const { app, settings, context, folderPath, parentFile, excerpt } = opts;
 
-    const scheme = createScheme(app, settings);
+    const scheme = new LuhmannScheme(app);
 
     // Resolve zettel-id and parent metadata
     let zettelId: string;

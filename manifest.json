@@ -1,9 +1,9 @@
 {
   "id": "zettelgarten",
   "name": "Zettelgarten",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "minAppVersion": "1.0.0",
-  "description": "Configures Zettelkasten note IDs and frontmatter in settings, creates derivative and excerpt notes, and optionally syncs filenames with the title property.",
+  "description": "Luhmann-style Zettelkasten note IDs and configurable frontmatter in settings, derivative and excerpt notes, optional filename sync with title, and bulk frontmatter updates for existing notes.",
   "author": "Clinamenic",
   "authorUrl": "https://github.com/Clinamenic",
   "isDesktopOnly": true

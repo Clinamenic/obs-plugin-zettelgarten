@@ -1,15 +1,12 @@
 import { App, PluginSettingTab, Setting } from 'obsidian';
 import type ZettelgartenPlugin from './main';
-import type { NoteTemplateSchema, OptionalTemplateFieldKey, PluginSettings, SchemeType } from './types';
+import type { NoteTemplateSchema, OptionalTemplateFieldKey, PluginSettings } from './types';
 import { DEFAULT_NOTE_TEMPLATE_SCHEMA } from './types';
 import { mergeNoteTemplateSchema, NOTE_TEMPLATE_OPTIONAL_KEYS } from './template-processor';
 import { previewNoteTemplateYaml, validateNoteTemplateSchema } from './template-validation';
 import { openUnifiedVaultSyncModal } from './vault-sync';
 
 export const DEFAULT_SETTINGS: PluginSettings = {
-    scheme: 'luhmann',
-    customRootTemplate: '{n}',
-    customChildTemplate: '{parent}{letter}',
     defaultFolder: '',
     syncFilenameWithTitle: true,
     noteTemplateSchema: structuredClone(DEFAULT_NOTE_TEMPLATE_SCHEMA),
@@ -62,65 +59,19 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
 
         containerEl.createEl('h2', { text: 'Zettelgarten' });
 
-        // --- ID Scheme ---
-        containerEl.createEl('h3', { text: 'ID Scheme' });
-
-        new Setting(containerEl)
-            .setName('Naming scheme')
-            .setDesc('The identifier scheme used when creating new zettel notes.')
-            .addDropdown(drop => {
-                const options: Record<SchemeType, string> = {
-                    luhmann: 'Luhmann Alphanumeric (1, 1a, 1a1, 1b…)',
-                    decimal: 'Decimal (1, 1.1, 1.1.1, 1.2…)',
-                    timestamp: 'Timestamp (YYYYMMDDHHMM)',
-                    sequential: 'Sequential (001, 002, 003…)',
-                    custom: 'Custom template',
-                };
-                Object.entries(options).forEach(([val, label]) => drop.addOption(val, label));
-                drop.setValue(this.plugin.settings.scheme);
-                drop.onChange(async val => {
-                    this.plugin.settings.scheme = val as SchemeType;
-                    await this.plugin.saveSettings();
-                    this.display();
-                });
-            });
-
-        if (this.plugin.settings.scheme === 'custom') {
-            new Setting(containerEl)
-                .setName('Root ID template')
-                .setDesc('Template for new root notes. Variables: {n}, {letter}, {YYYY}, {MM}, {DD}, {HH}, {mm}')
-                .addText(text =>
-                    text
-                        .setPlaceholder('{n}')
-                        .setValue(this.plugin.settings.customRootTemplate)
-                        .onChange(async val => {
-                            this.plugin.settings.customRootTemplate = val;
-                            await this.plugin.saveSettings();
-                        }),
-                );
-
-            new Setting(containerEl)
-                .setName('Child ID template')
-                .setDesc('Template for derivative notes. Variables: {parent}, {n}, {letter}, {YYYY}, {MM}, {DD}, {HH}, {mm}')
-                .addText(text =>
-                    text
-                        .setPlaceholder('{parent}{letter}')
-                        .setValue(this.plugin.settings.customChildTemplate)
-                        .onChange(async val => {
-                            this.plugin.settings.customChildTemplate = val;
-                            await this.plugin.saveSettings();
-                        }),
-                );
-        }
-
         // --- Note Creation ---
         containerEl.createEl('h3', { text: 'Note Creation' });
+
+        containerEl.createEl('p', {
+            text: 'New notes use Luhmann-style folgezettel IDs (1, 1a, 1a1, 1b, …).',
+            cls: 'zettelgarten-setting-hint',
+        });
 
         new Setting(containerEl)
             .setName('Sync filename with title')
             .setDesc(
                 'When enabled, renaming the title property updates the file name to match: `{zettel-id}.md` with no title, ' +
-                    'or `{zettel-id} {title}.md` when a title is set. Applies to all ID schemes. ' +
+                    'or `{zettel-id} {title}.md` when a title is set. ' +
                     'Only affects notes whose file name already follows this pattern (or the legacy `{zettel-id} - {title}` form).',
             )
             .addToggle(toggle =>
@@ -224,9 +175,8 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
         containerEl.createEl('h3', { text: 'Existing notes' });
         containerEl.createEl('p', {
             text:
-                'Apply your current naming scheme and note template to notes that already exist. ' +
-                'Step 1 updates zettel-ids and filenames when using a hierarchical scheme. ' +
-                'Step 2 rebuilds frontmatter for notes whose `type` matches the template (existing values are kept where possible; disabled optional fields are removed).',
+                'Rebuild frontmatter for notes that already have a `zettel-id` and whose `type` matches the template above. ' +
+                'Existing values are kept where possible; keys for disabled optional fields are removed.',
             cls: 'zettelgarten-setting-hint',
         });
         new Setting(containerEl).addButton(btn =>

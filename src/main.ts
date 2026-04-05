@@ -33,6 +33,10 @@ export default class ZettelgartenPlugin extends Plugin {
 
     async loadSettings(): Promise<void> {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        const legacy = this.settings as unknown as Record<string, unknown>;
+        delete legacy.scheme;
+        delete legacy.customRootTemplate;
+        delete legacy.customChildTemplate;
         this.settings.noteTemplateSchema = mergeNoteTemplateSchema(this.settings.noteTemplateSchema);
     }
 

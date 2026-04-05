@@ -2,7 +2,6 @@ import type { Editor, MarkdownFileInfo, MarkdownView, Menu, TAbstractFile, TFile
 import { TFolder } from 'obsidian';
 import type ZettelgartenPlugin from './main';
 import { createNote } from './note-creator';
-import { migrateFolder } from './migration';
 
 export function registerContextMenus(plugin: ZettelgartenPlugin): void {
     const { app } = plugin;
@@ -54,12 +53,6 @@ export function registerContextMenus(plugin: ZettelgartenPlugin): void {
                                     folderPath: file.path,
                                 }),
                             ),
-                    );
-                    menu.addItem(item =>
-                        item
-                            .setTitle('Migrate notes to current scheme')
-                            .setIcon('arrow-right-left')
-                            .onClick(() => migrateFolder(app, file.path, plugin.settings)),
                     );
                 } else if (isMarkdownFile(file)) {
                     menu.addSeparator();

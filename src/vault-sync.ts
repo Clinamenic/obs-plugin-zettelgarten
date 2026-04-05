@@ -1,12 +1,6 @@
 import { App, Modal, Notice, Setting, TFile } from 'obsidian';
 import { parseYaml } from 'obsidian';
-import type { MigrationEntry } from './types';
 import type { PluginSettings } from './types';
-import {
-    collectZettelNotesVaultWide,
-    computeMigrationEntries,
-    executeMigration,
-} from './migration';
 import {
     buildRecordForExistingNote,
     mergeNoteTemplateSchema,
@@ -54,11 +48,10 @@ async function executeFrontmatterSync(app: App, settings: PluginSettings): Promi
     return count;
 }
 
-class UnifiedVaultSyncModal extends Modal {
+class FrontmatterVaultSyncModal extends Modal {
     constructor(
         app: App,
         private settings: PluginSettings,
-        private idEntries: MigrationEntry[],
         private frontmatterCount: number,
         private onConfirm: () => void | Promise<void>,
     ) {
@@ -70,49 +63,17 @@ class UnifiedVaultSyncModal extends Modal {
         const schema = mergeNoteTemplateSchema(this.settings.noteTemplateSchema);
         const typeLit = schema.typeLiteral;
 
-        contentEl.createEl('h3', { text: 'Apply settings to existing notes', cls: 'zettelgarten-modal-title' });
+        contentEl.createEl('h3', { text: 'Apply template to existing notes', cls: 'zettelgarten-modal-title' });
 
         contentEl.createEl('p', {
             text:
-                'This runs in two steps: (1) rename files and update zettel-ids when your naming scheme requires it; ' +
-                '(2) rebuild frontmatter for notes whose type matches the template. Large vaults may take a moment.',
+                'Rebuild frontmatter for notes that have a zettel-id and whose type matches your template. ' +
+                'Large vaults may take a moment.',
             cls: 'zettelgarten-migration-desc',
         });
 
-        contentEl.createEl('h4', { text: 'Step 1: Naming scheme (IDs)', cls: 'zettelgarten-vault-sync-h4' });
-        if (this.idEntries.length === 0) {
-            contentEl.createEl('p', {
-                text: 'No file renames or zettel-id changes (non-hierarchical scheme, or already aligned).',
-                cls: 'zettelgarten-migration-desc',
-            });
-        } else {
-            contentEl.createEl('p', {
-                text: `${this.idEntries.length} note(s) will be renamed and zettel-id values updated.`,
-                cls: 'zettelgarten-migration-desc',
-            });
-            const maxRows = 25;
-            const table = contentEl.createEl('table', { cls: 'zettelgarten-migration-table' });
-            const thead = table.createEl('thead');
-            const hr = thead.createEl('tr');
-            hr.createEl('th', { text: 'Old ID' });
-            hr.createEl('th', { text: 'New ID' });
-            const tbody = table.createEl('tbody');
-            for (const entry of this.idEntries.slice(0, maxRows)) {
-                const tr = tbody.createEl('tr');
-                tr.createEl('td', { text: entry.oldId });
-                tr.createEl('td', { text: entry.newId });
-            }
-            if (this.idEntries.length > maxRows) {
-                contentEl.createEl('p', {
-                    text: `… and ${this.idEntries.length - maxRows} more.`,
-                    cls: 'zettelgarten-migration-desc',
-                });
-            }
-        }
-
-        contentEl.createEl('h4', { text: 'Step 2: Frontmatter template', cls: 'zettelgarten-vault-sync-h4' });
         contentEl.createEl('p', {
-            text: `Rebuild YAML for up to ${this.frontmatterCount} note(s) with type "${typeLit}" (preserving existing field values where keys stay enabled; keys for disabled optional fields are removed).`,
+            text: `Up to ${this.frontmatterCount} note(s) with type "${typeLit}" (preserving existing field values where keys stay enabled; keys for disabled optional fields are removed).`,
             cls: 'zettelgarten-migration-desc',
         });
 
@@ -132,27 +93,17 @@ class UnifiedVaultSyncModal extends Modal {
 }
 
 export function openUnifiedVaultSyncModal(app: App, settings: PluginSettings): void {
-    const allZettel = collectZettelNotesVaultWide(app);
-    const idEntries = computeMigrationEntries(app, settings, allZettel);
     const schema = mergeNoteTemplateSchema(settings.noteTemplateSchema);
     const typeLit = schema.typeLiteral;
     const frontmatterCount = collectNotesForTemplateSync(app, typeLit).length;
 
-    if (idEntries.length === 0 && frontmatterCount === 0) {
-        new Notice('Zettelgarten: nothing to sync (no matching notes).');
+    if (frontmatterCount === 0) {
+        new Notice('Zettelgarten: no notes match (need zettel-id and matching type).');
         return;
     }
 
-    new UnifiedVaultSyncModal(app, settings, idEntries, frontmatterCount, async () => {
-        if (idEntries.length > 0) {
-            await executeMigration(app, idEntries, { silent: true });
-        }
+    new FrontmatterVaultSyncModal(app, settings, frontmatterCount, async () => {
         const n = await executeFrontmatterSync(app, settings);
-        const parts: string[] = [];
-        if (idEntries.length > 0) {
-            parts.push(`migrated ${idEntries.length} note(s)`);
-        }
-        parts.push(`frontmatter updated for ${n} note(s)`);
-        new Notice(`Zettelgarten: ${parts.join('; ')}.`);
+        new Notice(`Zettelgarten: frontmatter updated for ${n} note(s).`);
     }).open();
 }

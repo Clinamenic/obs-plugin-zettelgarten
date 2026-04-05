@@ -1,7 +1,3 @@
-import type { TFile } from 'obsidian';
-
-export type SchemeType = 'luhmann' | 'decimal' | 'timestamp' | 'sequential' | 'custom';
-
 /** Optional frontmatter keys controlled by the note template schema (YAML keys differ). */
 export type OptionalTemplateFieldKey =
     | 'title'
@@ -36,9 +32,6 @@ export const DEFAULT_NOTE_TEMPLATE_SCHEMA: NoteTemplateSchema = {
 };
 
 export interface PluginSettings {
-    scheme: SchemeType;
-    customRootTemplate: string;
-    customChildTemplate: string;
     defaultFolder: string;
     /** When true, rename notes to `{zettel-id}.md` or `{zettel-id} {title}.md` when title frontmatter changes. */
     syncFilenameWithTitle: boolean;
@@ -67,21 +60,4 @@ export interface ZettelNote {
 export interface ParsedId {
     parentId: string | null;
     depth: number;
-}
-
-export interface MigrationEntry {
-    file: TFile;
-    oldId: string;
-    newId: string;
-    oldPath: string;
-    newPath: string;
-}
-
-export interface NoteTreeNode {
-    file: TFile;
-    zettelId: string;
-    uuid: string;
-    parentUuid: string | null;
-    children: NoteTreeNode[];
-    newId: string;
 }
