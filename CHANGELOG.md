@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.5 - 2026-04-05 (refs 5075d3b)
+
+### Fixed
+
+- Ribbon icon now renders reliably by injecting the zeta glyph directly into the ribbon element's DOM rather than via `addIcon` SVG (which did not display in Obsidian's icon renderer)
+
 ## 0.1.4 - 2026-04-05
 
 ### Added
