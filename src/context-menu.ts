@@ -4,7 +4,7 @@ import type ZettelgartenPlugin from './main';
 import { createNote } from './note-creator';
 import { migrateFolder } from './migration';
 
-export function registerContextMenus(plugin: ZettelgartenPlugin, pluginDir: string): void {
+export function registerContextMenus(plugin: ZettelgartenPlugin): void {
     const { app } = plugin;
 
     plugin.registerEvent(
@@ -25,7 +25,6 @@ export function registerContextMenus(plugin: ZettelgartenPlugin, pluginDir: stri
                             createNote({
                                 app,
                                 settings: plugin.settings,
-                                pluginDir,
                                 context: 'excerpt',
                                 folderPath: plugin.settings.defaultFolder || '',
                                 parentFile: sourceFile ?? undefined,
@@ -51,7 +50,6 @@ export function registerContextMenus(plugin: ZettelgartenPlugin, pluginDir: stri
                                 createNote({
                                     app,
                                     settings: plugin.settings,
-                                    pluginDir,
                                     context: 'root',
                                     folderPath: file.path,
                                 }),
@@ -73,7 +71,6 @@ export function registerContextMenus(plugin: ZettelgartenPlugin, pluginDir: stri
                                 createNote({
                                     app,
                                     settings: plugin.settings,
-                                    pluginDir,
                                     context: 'derivative',
                                     folderPath: file.parent?.path ?? '',
                                     parentFile: file,

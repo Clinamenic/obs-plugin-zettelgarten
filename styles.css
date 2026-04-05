@@ -66,3 +66,61 @@
     width: 100%;
     height: 100%;
 }
+
+/* Note template settings */
+.zettelgarten-template-subheading {
+    font-size: var(--font-ui-small);
+    font-weight: var(--font-semibold);
+    color: var(--text-normal);
+    margin-top: var(--size-4-3);
+    margin-bottom: var(--size-4-1);
+}
+
+.zettelgarten-template-fixed-block {
+    margin-bottom: var(--size-4-2);
+}
+
+.zettelgarten-template-fixed-list {
+    margin: var(--size-4-1) 0 0;
+    padding-left: var(--size-4-6);
+    font-size: var(--font-ui-small);
+    color: var(--text-muted);
+    line-height: 1.5;
+}
+
+.zettelgarten-template-preview {
+    margin-top: var(--size-4-4);
+}
+
+.zettelgarten-template-preview-pre {
+    margin: var(--size-4-2) 0 0;
+    padding: var(--size-4-3);
+    font-family: var(--font-monospace);
+    font-size: var(--font-ui-small);
+    line-height: 1.45;
+    color: var(--text-normal);
+    background-color: var(--background-secondary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-s);
+    white-space: pre-wrap;
+    overflow-x: auto;
+}
+
+.zettelgarten-template-validation {
+    margin-top: var(--size-4-3);
+}
+
+.zettelgarten-template-validation-ok {
+    font-size: var(--font-ui-small);
+    color: var(--text-accent);
+}
+
+.zettelgarten-template-validation-error {
+    font-size: var(--font-ui-small);
+    color: var(--text-error);
+}
+
+.zettelgarten-template-validation-error ul {
+    margin: var(--size-4-1) 0 0;
+    padding-left: var(--size-4-6);
+}

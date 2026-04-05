@@ -2,7 +2,7 @@ import { Plugin } from 'obsidian';
 import { DEFAULT_SETTINGS, ZettelgartenSettingTab } from './settings';
 import { registerContextMenus } from './context-menu';
 import { registerTitleFilenameSync } from './title-filename-sync';
-import { ensureDefaultTemplate } from './template-processor';
+import { mergeNoteTemplateSchema } from './template-processor';
 import type { PluginSettings } from './types';
 
 export default class ZettelgartenPlugin extends Plugin {
@@ -10,10 +10,6 @@ export default class ZettelgartenPlugin extends Plugin {
 
     async onload(): Promise<void> {
         await this.loadSettings();
-
-        const pluginDir = this.manifest.dir ?? `.obsidian/plugins/${this.manifest.id}`;
-
-        await ensureDefaultTemplate(this.app, pluginDir);
 
         this.addSettingTab(new ZettelgartenSettingTab(this.app, this));
 
@@ -30,13 +26,14 @@ export default class ZettelgartenPlugin extends Plugin {
 
         registerTitleFilenameSync(this);
 
-        registerContextMenus(this, pluginDir);
+        registerContextMenus(this);
     }
 
     onunload(): void {}
 
     async loadSettings(): Promise<void> {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+        this.settings.noteTemplateSchema = mergeNoteTemplateSchema(this.settings.noteTemplateSchema);
     }
 
     async saveSettings(): Promise<void> {

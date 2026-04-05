@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.0 - 2026-04-05
+
+### Added
+
+- **Note template** is configured entirely in **Settings**: fixed fields (`uuid`, `zettel-id`, `parent-uuid`), a required literal `type`, and toggleable optional fields (`title`, `date`, `timestamp-iso`, `references`, `tags`, `parent-id`) with value templates using allowlisted `{{...}}` variables.
+- Live **validation** and a **YAML preview** (sample values) in the template section.
+
+### Removed
+
+- **Template file path** and reading frontmatter from an external Markdown template file. Users who used a custom template file should reproduce those fields in the new settings editor.
+
+### Changed
+
+- New notes always use the built-in template pipeline from settings; the plugin no longer writes `default-template.md` under the plugin folder on load.
+
 ## 0.1.6 - 2026-04-05
 
 ### Added

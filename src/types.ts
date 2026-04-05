@@ -2,14 +2,48 @@ import type { TFile } from 'obsidian';
 
 export type SchemeType = 'luhmann' | 'decimal' | 'timestamp' | 'sequential' | 'custom';
 
+/** Optional frontmatter keys controlled by the note template schema (YAML keys differ). */
+export type OptionalTemplateFieldKey =
+    | 'title'
+    | 'date'
+    | 'timestampIso'
+    | 'references'
+    | 'tags'
+    | 'parentId';
+
+export interface OptionalFieldSpec {
+    enabled: boolean;
+    /** May contain only allowlisted {{...}} tokens; see template-tokens.ts */
+    valueTemplate: string;
+}
+
+export interface NoteTemplateSchema {
+    /** Literal value for `type:` (no token substitution). */
+    typeLiteral: string;
+    optionalFields: Record<OptionalTemplateFieldKey, OptionalFieldSpec>;
+}
+
+export const DEFAULT_NOTE_TEMPLATE_SCHEMA: NoteTemplateSchema = {
+    typeLiteral: 'zettel',
+    optionalFields: {
+        title: { enabled: true, valueTemplate: '{{title}}' },
+        date: { enabled: true, valueTemplate: '{{date}}' },
+        timestampIso: { enabled: true, valueTemplate: '{{datetime}}' },
+        references: { enabled: true, valueTemplate: '{{references}}' },
+        tags: { enabled: true, valueTemplate: '[]' },
+        parentId: { enabled: false, valueTemplate: '{{parent-id}}' },
+    },
+};
+
 export interface PluginSettings {
     scheme: SchemeType;
     customRootTemplate: string;
     customChildTemplate: string;
     defaultFolder: string;
-    templatePath: string;
     /** When true, rename notes to `{zettel-id}.md` or `{zettel-id} {title}.md` when title frontmatter changes. */
     syncFilenameWithTitle: boolean;
+    /** Frontmatter for new notes; exclusive source (no external template files). */
+    noteTemplateSchema: NoteTemplateSchema;
 }
 
 export interface TemplateContext {
@@ -19,6 +53,7 @@ export interface TemplateContext {
     parentId: string;
     references: string[];
     title: string;
+    tags: string[];
 }
 
 export interface ZettelNote {

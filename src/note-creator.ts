@@ -10,7 +10,6 @@ import { processTemplate } from './template-processor';
 export interface CreateNoteOpts {
     app: App;
     settings: PluginSettings;
-    pluginDir: string;
     context: 'root' | 'derivative' | 'excerpt';
     folderPath: string;
     parentFile?: TFile;
@@ -18,7 +17,7 @@ export interface CreateNoteOpts {
 }
 
 export async function createNote(opts: CreateNoteOpts): Promise<void> {
-    const { app, settings, pluginDir, context, folderPath, parentFile, excerpt } = opts;
+    const { app, settings, context, folderPath, parentFile, excerpt } = opts;
 
     const scheme = createScheme(app, settings);
 
@@ -60,10 +59,10 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
         parentId: parentZettelId,
         references,
         title: '',
+        tags: [],
     };
 
-    // Process template
-    const frontmatter = await processTemplate(app, settings.templatePath, pluginDir, ctx);
+    const frontmatter = processTemplate(settings, ctx);
 
     // Build body
     let body = '';
