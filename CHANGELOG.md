@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 - 2026-04-05
+
+### Fixed
+
+- **ID allocation:** New root and derivative IDs are computed from **every** note with a `zettel-id` in the vault. Creating a note in a different folder no longer restarts numbering (e.g. root `3` after `1` and `2` exist elsewhere).
+
 ## 0.4.1 - 2026-04-05
 
 ### Changed

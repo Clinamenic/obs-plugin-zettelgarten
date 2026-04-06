@@ -37,13 +37,10 @@ export async function createNote(opts: CreateNoteOpts): Promise<void> {
             return;
         }
 
-        zettelId = await scheme.nextChildId(parentZettelId, folderPath);
+        zettelId = await scheme.nextChildId(parentZettelId);
         references = [`[[${parentFile.basename}]]`];
     } else {
-        const targetFolder = context === 'excerpt'
-            ? (settings.defaultFolder || '')
-            : folderPath;
-        zettelId = await scheme.nextRootId(targetFolder);
+        zettelId = await scheme.nextRootId();
         if (context === 'excerpt' && parentFile) {
             const cache = app.metadataCache.getFileCache(parentFile);
             parentUuid = cache?.frontmatter?.['uuid'] ?? '';

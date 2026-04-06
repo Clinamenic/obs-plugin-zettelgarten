@@ -5,17 +5,12 @@ function escapeRegex(str: string): string {
     return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-async function getExistingIds(app: App, folderPath: string): Promise<Set<string>> {
+/** Every `zettel-id` in the vault (allocation is global, not per folder). */
+function getAllZettelIds(app: App): Set<string> {
     const ids = new Set<string>();
-    const normalized = folderPath === '/' ? '' : folderPath;
-    const files = app.vault.getMarkdownFiles().filter(f => {
-        const p = f.parent?.path ?? '';
-        return (p === '/' ? '' : p) === normalized;
-    });
-    for (const file of files) {
-        const cache = app.metadataCache.getFileCache(file);
-        const id = cache?.frontmatter?.['zettel-id'];
-        if (typeof id === 'string' && id) ids.add(id);
+    for (const file of app.vault.getMarkdownFiles()) {
+        const id = app.metadataCache.getFileCache(file)?.frontmatter?.['zettel-id'];
+        if (typeof id === 'string' && id.trim()) ids.add(id.trim());
     }
     return ids;
 }
@@ -57,8 +52,8 @@ function indexToLetters(index: number): string {
 export class LuhmannScheme {
     constructor(private app: App) {}
 
-    async nextRootId(folderPath: string): Promise<string> {
-        const ids = await getExistingIds(this.app, folderPath);
+    async nextRootId(): Promise<string> {
+        const ids = getAllZettelIds(this.app);
         const used: number[] = [];
         for (const id of ids) {
             if (/^\d+$/.test(id)) used.push(parseInt(id, 10));
@@ -67,8 +62,8 @@ export class LuhmannScheme {
         return (max + 1).toString();
     }
 
-    async nextChildId(parentId: string, folderPath: string): Promise<string> {
-        const ids = await getExistingIds(this.app, folderPath);
+    async nextChildId(parentId: string): Promise<string> {
+        const ids = getAllZettelIds(this.app);
         const segments = parseLuhmannSegments(parentId);
         const lastSeg = segments[segments.length - 1] ?? '';
         const endsWithLetters = /^[a-z]+$/.test(lastSeg);

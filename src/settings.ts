@@ -63,7 +63,9 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
         containerEl.createEl('h3', { text: 'Note Creation' });
 
         containerEl.createEl('p', {
-            text: 'New notes use Luhmann-style folgezettel IDs (1, 1a, 1a1, 1b, …).',
+            text:
+                'New notes use Luhmann-style folgezettel IDs (1, 1a, 1a1, 1b, …). ' +
+                'Next root and sibling IDs are chosen from all notes in the vault (not per folder); the folder only sets where the new file is saved.',
             cls: 'zettelgarten-setting-hint',
         });
 
