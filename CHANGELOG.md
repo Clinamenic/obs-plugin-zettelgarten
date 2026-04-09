@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.4 - 2026-04-09
+
+### Fixed
+
+- **Root note creation:** If the next computed root id points to an existing filename in the target folder (for example due to duplicate/rename drift), creation now skips to the next free numeric id instead of failing with “file already exists”. The plugin also warns when a collided filename appears out of sync with its frontmatter `zettel-id`.
+
 ## 0.4.3 - 2026-04-06
 
 ### Breaking
