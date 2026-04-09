@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.3 - 2026-04-06
+
+### Breaking
+
+- **Note template:** The optional `timestamp-iso` YAML field is removed from settings, token allowlist, and generated frontmatter. Use `date` and/or `{{datetime}}` in a custom field if you still need a time stamp in YAML. Existing notes keep whatever frontmatter they already have until you edit or run **Apply current settings to existing notes** (that pass will drop `timestamp-iso` because it is no longer in the schema).
+- **Note template:** The optional `parent-id` YAML field is removed from configurable optional fields. `parent-uuid` remains always included as a fixed field.
+
+### Changed
+
+- **Defaults/UI:** The default `title` template value is now blank (resulting in `title: null` when no title exists), and always-included identifiers (`uuid`, `zettel-id`, `parent-uuid`) are shown as read-only field rows in settings.
+
 ## 0.4.2 - 2026-04-05
 
 ### Fixed
@@ -44,7 +55,7 @@
 
 ### Added
 
-- **Note template** is configured entirely in **Settings**: fixed fields (`uuid`, `zettel-id`, `parent-uuid`), a required literal `type`, and toggleable optional fields (`title`, `date`, `timestamp-iso`, `references`, `tags`, `parent-id`) with value templates using allowlisted `{{...}}` variables.
+- **Note template** is configured entirely in **Settings**: fixed fields (`uuid`, `zettel-id`, `parent-uuid`), a required literal `type`, and toggleable optional fields (`title`, `date`, `references`, `tags`, `parent-id`) with value templates using allowlisted `{{...}}` variables.
 - Live **validation** and a **YAML preview** (sample values) in the template section.
 
 ### Removed

@@ -10,7 +10,6 @@ parent-uuid: "{{parent-uuid}}"
 title:
 type: zettel
 date: "{{date}}"
-timestamp-iso: "{{datetime}}"
 tags: []
 references: "{{references}}"
 ---
@@ -32,7 +31,6 @@ export function resolveToken(value: string, ctx: TemplateContext): string {
         .replace(/\{\{date-short\}\}/g, dateShort)
         .replace(/\{\{date\}\}/g, dateIso)
         .replace(/\{\{datetime\}\}/g, datetime)
-        .replace(/\{\{timestamp-iso\}\}/g, datetime)
         .replace(/\{\{tags\}\}/g, () => JSON.stringify(ctx.tags));
 }
 
@@ -91,20 +89,12 @@ export function buildFrontmatterFromSchema(ctx: TemplateContext, schema: NoteTem
         record.date = resolveOptionalFieldValue('date', opt.date.valueTemplate, ctx);
     }
 
-    if (opt.timestampIso.enabled) {
-        record['timestamp-iso'] = resolveOptionalFieldValue('timestampIso', opt.timestampIso.valueTemplate, ctx);
-    }
-
     if (opt.tags.enabled) {
         record.tags = resolveOptionalFieldValue('tags', opt.tags.valueTemplate, ctx);
     }
 
     if (opt.references.enabled) {
         record.references = resolveOptionalFieldValue('references', opt.references.valueTemplate, ctx);
-    }
-
-    if (opt.parentId.enabled) {
-        record['parent-id'] = resolveOptionalFieldValue('parentId', opt.parentId.valueTemplate, ctx);
     }
 
     return buildFrontmatter(record);
@@ -171,15 +161,6 @@ export function buildRecordForExistingNote(
         }
     }
 
-    if (opt.timestampIso.enabled) {
-        const k = 'timestamp-iso';
-        if (Object.prototype.hasOwnProperty.call(existing, k) && existing[k] !== undefined) {
-            record[k] = existing[k];
-        } else {
-            record[k] = resolveOptionalFieldValue('timestampIso', opt.timestampIso.valueTemplate, ctx);
-        }
-    }
-
     if (opt.tags.enabled) {
         if (Object.prototype.hasOwnProperty.call(existing, 'tags') && existing.tags !== undefined) {
             record.tags = existing.tags;
@@ -193,15 +174,6 @@ export function buildRecordForExistingNote(
             record.references = existing.references;
         } else {
             record.references = resolveOptionalFieldValue('references', opt.references.valueTemplate, ctx);
-        }
-    }
-
-    if (opt.parentId.enabled) {
-        const k = 'parent-id';
-        if (Object.prototype.hasOwnProperty.call(existing, k) && existing[k] !== undefined) {
-            record[k] = existing[k];
-        } else {
-            record[k] = resolveOptionalFieldValue('parentId', opt.parentId.valueTemplate, ctx);
         }
     }
 
@@ -231,7 +203,6 @@ export function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown
         title: ctx.title || null,
         type: 'zettel',
         date: dateIso,
-        'timestamp-iso': datetime,
         tags: ctx.tags ?? [],
         references: ctx.references,
     };
@@ -243,10 +214,8 @@ export function buildDefaultRecord(ctx: TemplateContext): Record<string, unknown
 export const NOTE_TEMPLATE_OPTIONAL_KEYS: OptionalTemplateFieldKey[] = [
     'title',
     'date',
-    'timestampIso',
     'references',
     'tags',
-    'parentId',
 ];
 
 /** Deep-merge saved schema with defaults so partial or older saves stay valid. */

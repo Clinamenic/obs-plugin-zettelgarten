@@ -2,10 +2,8 @@
 export type OptionalTemplateFieldKey =
     | 'title'
     | 'date'
-    | 'timestampIso'
     | 'references'
-    | 'tags'
-    | 'parentId';
+    | 'tags';
 
 export interface OptionalFieldSpec {
     enabled: boolean;
@@ -22,12 +20,10 @@ export interface NoteTemplateSchema {
 export const DEFAULT_NOTE_TEMPLATE_SCHEMA: NoteTemplateSchema = {
     typeLiteral: 'zettel',
     optionalFields: {
-        title: { enabled: true, valueTemplate: '{{title}}' },
+        title: { enabled: true, valueTemplate: '' },
         date: { enabled: true, valueTemplate: '{{date}}' },
-        timestampIso: { enabled: true, valueTemplate: '{{datetime}}' },
         references: { enabled: true, valueTemplate: '{{references}}' },
         tags: { enabled: true, valueTemplate: '[]' },
-        parentId: { enabled: false, valueTemplate: '{{parent-id}}' },
     },
 };
 

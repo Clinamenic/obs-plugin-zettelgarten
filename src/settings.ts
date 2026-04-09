@@ -15,18 +15,13 @@ export const DEFAULT_SETTINGS: PluginSettings = {
 const OPTIONAL_FIELD_LABELS: Record<OptionalTemplateFieldKey, { name: string; desc: string; placeholder: string }> = {
     title: {
         name: 'Title',
-        desc: 'YAML key `title`. Use {{title}} for the note title at creation time.',
-        placeholder: '{{title}}',
+        desc: 'YAML key `title`. Leave blank to default to null; use {{title}} to mirror the note title.',
+        placeholder: 'null (leave blank)',
     },
     date: {
         name: 'Date',
         desc: 'YAML key `date`. Typically {{date}} (YYYY-MM-DD).',
         placeholder: '{{date}}',
-    },
-    timestampIso: {
-        name: 'Timestamp ISO',
-        desc: 'YAML key `timestamp-iso`. Use {{datetime}} or {{timestamp-iso}}.',
-        placeholder: '{{datetime}}',
     },
     references: {
         name: 'References',
@@ -37,11 +32,6 @@ const OPTIONAL_FIELD_LABELS: Record<OptionalTemplateFieldKey, { name: string; de
         name: 'Tags',
         desc: 'YAML key `tags`. Use [] for empty array, or {{tags}}.',
         placeholder: '[]',
-    },
-    parentId: {
-        name: 'Parent zettel ID',
-        desc: 'YAML key `parent-id`. Use {{parent-id}} for the parent note id when applicable.',
-        placeholder: '{{parent-id}}',
     },
 };
 
@@ -108,11 +98,9 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
 
         const fixedEl = containerEl.createDiv({ cls: 'zettelgarten-template-fixed-block' });
         fixedEl.createEl('div', { text: 'Always included', cls: 'zettelgarten-template-subheading' });
-        fixedEl.createEl('ul', { cls: 'zettelgarten-template-fixed-list' }, ul => {
-            ul.createEl('li', { text: 'uuid (from {{uuid}})' });
-            ul.createEl('li', { text: 'zettel-id (from {{zettel-id}})' });
-            ul.createEl('li', { text: 'parent-uuid (from {{parent-uuid}})' });
-        });
+        new Setting(fixedEl).setName('uuid').setDesc('Fixed value from {{uuid}}');
+        new Setting(fixedEl).setName('zettel-id').setDesc('Fixed value from {{zettel-id}}');
+        new Setting(fixedEl).setName('parent-uuid').setDesc('Fixed value from {{parent-uuid}}');
 
         new Setting(containerEl)
             .setName('Type')
@@ -168,7 +156,7 @@ export class ZettelgartenSettingTab extends PluginSettingTab {
 
         containerEl.createEl('p', {
             text:
-                'Allowed variables: {{uuid}}, {{zettel-id}}, {{parent-uuid}}, {{parent-id}}, {{title}}, {{date-short}}, {{date}}, {{datetime}}, {{timestamp-iso}}, {{references}}, {{tags}}.',
+                'Allowed variables: {{uuid}}, {{zettel-id}}, {{parent-uuid}}, {{title}}, {{date-short}}, {{date}}, {{datetime}}, {{references}}, {{tags}}.',
             cls: 'zettelgarten-setting-hint',
         });
 

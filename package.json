@@ -1,6 +1,6 @@
 {
   "name": "zettelgarten",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "description": "Zettelkasten note management with configurable ID schemes, derivative note creation, and automatic frontmatter generation.",
   "main": "main.js",
   "scripts": {

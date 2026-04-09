@@ -8,7 +8,6 @@ export const ALLOWED_TEMPLATE_TOKEN_NAMES = new Set([
     'date-short',
     'date',
     'datetime',
-    'timestamp-iso',
     'references',
     'tags',
 ]);

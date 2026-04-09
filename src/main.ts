@@ -37,6 +37,11 @@ export default class ZettelgartenPlugin extends Plugin {
         delete legacy.scheme;
         delete legacy.customRootTemplate;
         delete legacy.customChildTemplate;
+        const rawOpt = this.settings.noteTemplateSchema?.optionalFields as Record<string, unknown> | undefined;
+        if (rawOpt) {
+            delete rawOpt.timestampIso;
+            delete rawOpt.parentId;
+        }
         this.settings.noteTemplateSchema = mergeNoteTemplateSchema(this.settings.noteTemplateSchema);
     }
 
